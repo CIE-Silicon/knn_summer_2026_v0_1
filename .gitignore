@@ -1,7 +1,7 @@
 # --- Vivado Project/Run Files ---
 # Ignore the entire work directory where the project is built
 work/
-SoC_V_01/
+SoC_PJT/
 
 # Ignore auto-generated log and journal files
 *.log
