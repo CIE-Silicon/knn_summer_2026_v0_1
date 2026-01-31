@@ -196,9 +196,9 @@ if { $obj != {} } {
 # None
 
 # Set 'sources_1' fileset properties
-set obj [get_filesets sources_1]
-set_property -name "dataflow_viewer_settings" -value "min_width=16" -objects $obj
-set_property -name "top" -value "design_1_wrapper" -objects $obj
+#set obj [get_filesets sources_1]
+#set_property -name "dataflow_viewer_settings" -value "min_width=16" -objects $obj
+#set_property -name "top" -value "design_1_wrapper" -objects $obj
 
 # Create 'constrs_1' fileset (if not found)
 if {[string equal [get_filesets -quiet constrs_1] ""]} {
