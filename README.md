@@ -43,3 +43,7 @@ Right-click design_1.bd again and select Create HDL Wrapper (ensure "Let Vivado 
 
 Run Simulation from the Flow Navigator.
 
+
+## Setup Video Reference
+If you prefer a visual guide, click the link below to watch the setup and build process:
+[Setup Video](https://drive.google.com/file/d/12DXg1meAnCka_F7diMZOxisBL-jpe2b8/view?usp=sharing)
