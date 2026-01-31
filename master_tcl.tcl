@@ -14,13 +14,9 @@ puts "********************************************************"
 
 
 
-# 2. Rebuild the Project Structure
-# This runs the script you exported from Vivado
-source [file join $script_dir "build_project.tcl"]
+# 2. Rebuild the Project 
 
-# 3. Rebuild the Block Design (BD)
-# This draws the RISC-V SoC architecture
-source [file join $script_dir "recreate_bd.tcl"]
+source [file join $script_dir "build_project.tcl"]
 
 
 puts "-------------------------------------------------------"
