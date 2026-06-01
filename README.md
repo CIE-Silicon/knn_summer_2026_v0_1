@@ -33,7 +33,12 @@ Navigate into the parent folder (VIVADO_BLOCK_DESIGN_V01) and launch Vivado usin
 
 IMPORTANT: The project setup will only initialize correctly if the script is invoked from the parent repository directory.
 
-### 3. Generate and Simulate
+### 3. Basic setup
+Go into the uart lite IP and change the baud rate to 115200.
+
+Instantiate a BRAM IP block if not present.
+
+### 4. Generate and Simulate
 Once the Vivado GUI opens and the project is created:
 
 In the Sources pane, locate and right-click on design_1.bd.
