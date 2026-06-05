@@ -26,6 +26,7 @@
 #    "s25fl128s.v"
 #    "uart_receiver.v"
 #    "TB.v"
+#    "uart_rx_tb.v"
 #
 # 3. The following remote source files that were added to the original project:-
 #
@@ -40,6 +41,7 @@ proc checkRequiredFiles { origin_dir} {
  "[file normalize "$origin_dir/SoC_PJT/sim/s25fl128s.v"]"\
  "[file normalize "$origin_dir/SoC_PJT/sim/uart_receiver.v"]"\
  "[file normalize "$origin_dir/SoC_PJT/sim/TB.v"]"\
+ "[file normalize "$origin_dir/SoC_PJT/sim/uart_rx_tb.v"]"\
   ]
   foreach ifile $files {
     if { ![file isfile $ifile] } {
@@ -229,6 +231,7 @@ set files [list \
  [file normalize "${origin_dir}/SoC_PJT/sim/s25fl128s.v"]\
  [file normalize "${origin_dir}/SoC_PJT/sim/uart_receiver.v"]\
  [file normalize "${origin_dir}/SoC_PJT/sim/TB.v"]\
+ [file normalize "${origin_dir}/SoC_PJT/sim/uart_rx_tb.v"]\
 ]
 set imported_files ""
 foreach f $files {
