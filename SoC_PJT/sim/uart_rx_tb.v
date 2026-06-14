@@ -20,7 +20,7 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module TB(
+module uart_rx_tb(
 
     );
     
@@ -37,14 +37,7 @@ module TB(
     wire [4:0] tx_count;
     reg [7:0] tx_data = 8'hA5;
     reg tx_push = 1'b0;
-    reg [31:0] uart_tick_acc = 32'd0;
-    reg uart_enable = 1'b0;
     specparam        tdevice_PU                = 3e8;//tPU
-    localparam integer CLK_FREQ_HZ             = 100_000_000;
-    localparam integer UART_BAUD               = 115_200;
-    localparam integer UART_OVERSAMPLE         = 16;
-    localparam integer UART_TICK_RATE          = UART_BAUD * UART_OVERSAMPLE;
-    localparam integer UART_TICK_MODULO        = CLK_FREQ_HZ;
     
    design_1_wrapper dut(.usb_uart_rxd(uart_rx),
     .usb_uart_txd(uart_tx),
@@ -62,38 +55,15 @@ module TB(
 //    .led_4bits_tri(led));
     
    uart_transmitter tx_stim (
-        .clk(clk),
-        .wb_rst_i(~reset_0),
-        .lcr(8'b0000_0011),
-        .tf_push(tx_push),
-        .wb_dat_i(tx_data),
-        .enable(uart_enable),
-        .stx_pad_o(uart_rx),
-        .tstate(tx_state),
-        .tf_count(tx_count),
-        .tx_reset(~reset_0),
-        .lsr_mask(~reset_0)
+       .clk(clk),
+       .resetn(reset_0),
+       .tx_data(tx_data),
+       .tx_push(tx_push),
+       .stx_pad_o(uart_rx),
+       .tstate(tx_state),
+       .tf_count(tx_count)
     );
 
-    // tick generator for UART transmitter.
-    // uart_enable acts like an internal clock for the tx module.
-
-   always @(posedge clk or negedge reset_0) begin
-    if (!reset_0) begin
-        uart_tick_acc <= 32'd0;
-        uart_enable <= 1'b0;
-    end else begin
-        if (uart_tick_acc + UART_TICK_RATE >= UART_TICK_MODULO) begin
-            uart_tick_acc <= uart_tick_acc + UART_TICK_RATE - UART_TICK_MODULO;
-            uart_enable <= 1'b1;
-        end else begin
-            uart_tick_acc <= uart_tick_acc + UART_TICK_RATE;
-            uart_enable <= 1'b0;
-        end
-    end
-   end
-    
-    
    s25fl128s flash_memory( 
         // Data Inputs/Outputs
         .SI(fio0)     ,

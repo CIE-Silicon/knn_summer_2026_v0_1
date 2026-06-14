@@ -42,6 +42,7 @@ proc checkRequiredFiles { origin_dir} {
  "[file normalize "$origin_dir/SoC_PJT/sim/uart_receiver.v"]"\
  "[file normalize "$origin_dir/SoC_PJT/sim/TB.v"]"\
  "[file normalize "$origin_dir/SoC_PJT/sim/uart_rx_tb.v"]"\
+ "[file normalize "$origin_dir/SoC_PJT/sim/uart_transmitter.v"]"\
   ]
   foreach ifile $files {
     if { ![file isfile $ifile] } {
@@ -232,6 +233,7 @@ set files [list \
  [file normalize "${origin_dir}/SoC_PJT/sim/uart_receiver.v"]\
  [file normalize "${origin_dir}/SoC_PJT/sim/TB.v"]\
  [file normalize "${origin_dir}/SoC_PJT/sim/uart_rx_tb.v"]\
+ [file normalize "${origin_dir}/SoC_PJT/sim/uart_transmitter.v"]\
 ]
 set imported_files ""
 foreach f $files {
