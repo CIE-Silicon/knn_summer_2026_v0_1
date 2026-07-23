@@ -26,6 +26,7 @@
 #    "s25fl128s.v"
 #    "uart_receiver.v"
 #    "TB.v"
+#    "cmd_interface_tb.v"
 #    "uart_rx_tb.v"
 #
 # 3. The following remote source files that were added to the original project:-
@@ -41,6 +42,7 @@ proc checkRequiredFiles { origin_dir} {
  "[file normalize "$origin_dir/SoC_PJT/sim/s25fl128s.v"]"\
  "[file normalize "$origin_dir/SoC_PJT/sim/uart_receiver.v"]"\
  "[file normalize "$origin_dir/SoC_PJT/sim/TB.v"]"\
+ "[file normalize "$origin_dir/SoC_PJT/sim/cmd_interface_tb.v"]"\
  "[file normalize "$origin_dir/SoC_PJT/sim/uart_rx_tb.v"]"\
  "[file normalize "$origin_dir/SoC_PJT/sim/uart_transmitter.v"]"\
   ]
@@ -142,7 +144,7 @@ if { $validate_required } {
 }
 
 # Create project
-create_project ${_xil_proj_name_} ./${_xil_proj_name_} -part xc7a35tcsg324-1
+create_project ${_xil_proj_name_} ./${_xil_proj_name_} -part xc7a100tcsg324-1
 
 # Set the directory path for the new project
 set proj_dir [get_property directory [current_project]]
@@ -153,26 +155,26 @@ set_msg_config  -id {IP_Flow 19-2187}  -string {{WARNING: [IP_Flow 19-2187] The 
 
 # Set project properties
 set obj [current_project]
-set_property -name "board_part_repo_paths" -value "[file normalize "$origin_dir/../../../../.Xilinx/Vivado/2024.2/xhub/board_store/xilinx_board_store"]" -objects $obj
 set_property -name "default_lib" -value "xil_defaultlib" -objects $obj
 set_property -name "enable_resource_estimation" -value "0" -objects $obj
 set_property -name "enable_vhdl_2008" -value "1" -objects $obj
 set_property -name "ip_cache_permissions" -value "read write" -objects $obj
 set_property -name "ip_output_repo" -value "$proj_dir/${_xil_proj_name_}.cache/ip" -objects $obj
 set_property -name "mem.enable_memory_map_generation" -value "1" -objects $obj
-set_property -name "part" -value "xc7a35tcsg324-1" -objects $obj
+set_property -name "part" -value "xc7a100tcsg324-1" -objects $obj
 set_property -name "revised_directory_structure" -value "1" -objects $obj
 set_property -name "sim.central_dir" -value "$proj_dir/${_xil_proj_name_}.ip_user_files" -objects $obj
 set_property -name "sim.ip.auto_export_scripts" -value "1" -objects $obj
+set_property -name "simulator_language" -value "Mixed" -objects $obj
 set_property -name "sim_compile_state" -value "1" -objects $obj
 set_property -name "use_inline_hdl_ip" -value "1" -objects $obj
-set_property -name "webtalk.modelsim_export_sim" -value "12" -objects $obj
-set_property -name "webtalk.questa_export_sim" -value "12" -objects $obj
-set_property -name "webtalk.riviera_export_sim" -value "12" -objects $obj
+set_property -name "webtalk.activehdl_export_sim" -value "26" -objects $obj
+set_property -name "webtalk.modelsim_export_sim" -value "38" -objects $obj
+set_property -name "webtalk.questa_export_sim" -value "38" -objects $obj
+set_property -name "webtalk.riviera_export_sim" -value "38" -objects $obj
 set_property -name "webtalk.vcs_export_sim" -value "12" -objects $obj
-set_property -name "webtalk.xcelium_export_sim" -value "2" -objects $obj
-set_property -name "webtalk.xsim_export_sim" -value "12" -objects $obj
-set_property -name "webtalk.xsim_launch_sim" -value "25" -objects $obj
+set_property -name "webtalk.xsim_export_sim" -value "38" -objects $obj
+set_property -name "webtalk.xsim_launch_sim" -value "131" -objects $obj
 set_property -name "xpm_libraries" -value "XPM_CDC XPM_FIFO XPM_MEMORY" -objects $obj
 
 # Create 'sources_1' fileset (if not found)
@@ -214,11 +216,17 @@ if {[string equal [get_filesets -quiet constrs_1] ""]} {
 # Set 'constrs_1' fileset object
 set obj [get_filesets constrs_1]
 
-# Empty (no sources present)
+# Add/Import constrs file and set constrs file properties
+set file "[file normalize "${origin_dir}/SoC_PJT/constraints/arty7_rtscts.xdc"]"
+set file_added [add_files -norecurse -fileset $obj [list $file]]
+set file "${origin_dir}/SoC_PJT/constraints/arty7_rtscts.xdc"
+set file [file normalize $file]
+set file_obj [get_files -of_objects [get_filesets constrs_1] [list "*$file"]]
+set_property -name "file_type" -value "XDC" -objects $file_obj
 
 # Set 'constrs_1' fileset properties
 set obj [get_filesets constrs_1]
-set_property -name "target_part" -value "xc7a35tcsg324-1" -objects $obj
+set_property -name "target_part" -value "xc7a100tcsg324-1" -objects $obj
 
 # Create 'sim_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sim_1] ""]} {
@@ -232,6 +240,7 @@ set files [list \
  [file normalize "${origin_dir}/SoC_PJT/sim/s25fl128s.v"]\
  [file normalize "${origin_dir}/SoC_PJT/sim/uart_receiver.v"]\
  [file normalize "${origin_dir}/SoC_PJT/sim/TB.v"]\
+ [file normalize "${origin_dir}/SoC_PJT/sim/cmd_interface_tb.v"]\
  [file normalize "${origin_dir}/SoC_PJT/sim/uart_rx_tb.v"]\
  [file normalize "${origin_dir}/SoC_PJT/sim/uart_transmitter.v"]\
 ]
@@ -284,13 +293,13 @@ proc cr_bd_design_1 { parentCell } {
   if { $bCheckIPs == 1 } {
      set list_check_ips "\ 
   user.org:user:picorv32_core:1.0\
-  xilinx.com:ip:axi_uartlite:2.0\
   xilinx.com:ip:axi_quad_spi:3.2\
   xilinx.com:ip:axi_gpio:2.0\
   xilinx.com:ip:proc_sys_reset:5.0\
   xilinx.com:ip:axi_bram_ctrl:4.1\
   xilinx.com:ip:blk_mem_gen:8.4\
   xilinx.com:ip:clk_wiz:6.0\
+  xilinx.com:ip:axi_uart16550:2.0\
   "
 
    set list_ips_missing ""
@@ -357,15 +366,13 @@ proc cr_bd_design_1 { parentCell } {
 
   # Create instance: picorv32_core_0, and set properties
   set picorv32_core_0 [ create_bd_cell -type ip -vlnv user.org:user:picorv32_core:1.0 picorv32_core_0 ]
+  set_property CONFIG.LATCHED_IRQ {0xFFFFFFFE} $picorv32_core_0
+
 
   # Create instance: axi_interconnect_0, and set properties
   set axi_interconnect_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_interconnect:2.1 axi_interconnect_0 ]
   set_property CONFIG.NUM_MI {4} $axi_interconnect_0
 
-
-  # Create instance: axi_uartlite_0, and set properties
-  set axi_uartlite_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_uartlite:2.0 axi_uartlite_0 ]
-  set_property CONFIG.C_BAUDRATE {115200} $axi_uartlite_0
 
   # Create instance: axi_quad_spi_0, and set properties
   set axi_quad_spi_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_quad_spi:3.2 axi_quad_spi_0 ]
@@ -379,6 +386,11 @@ proc cr_bd_design_1 { parentCell } {
 
   # Create instance: axi_gpio_0, and set properties
   set axi_gpio_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_gpio:2.0 axi_gpio_0 ]
+  set_property -dict [list \
+    CONFIG.C_ALL_OUTPUTS {0} \
+    CONFIG.C_GPIO_WIDTH {32} \
+  ] $axi_gpio_0
+
 
   # Create instance: proc_sys_reset_0, and set properties
   set proc_sys_reset_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:proc_sys_reset:5.0 proc_sys_reset_0 ]
@@ -402,100 +414,114 @@ proc cr_bd_design_1 { parentCell } {
   ] $clk_wiz_0
 
 
+  # Create instance: axi_uart16550_0, and set properties
+  set axi_uart16550_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:axi_uart16550:2.0 axi_uart16550_0 ]
+
   # Create interface connections
   connect_bd_intf_net -intf_net axi_bram_ctrl_0_BRAM_PORTA [get_bd_intf_pins blk_mem_gen_0/BRAM_PORTA] [get_bd_intf_pins axi_bram_ctrl_0/BRAM_PORTA]
   connect_bd_intf_net -intf_net axi_gpio_0_GPIO [get_bd_intf_ports led_4bits] [get_bd_intf_pins axi_gpio_0/GPIO]
   connect_bd_intf_net -intf_net axi_interconnect_0_M00_AXI [get_bd_intf_pins axi_interconnect_0/M00_AXI] [get_bd_intf_pins axi_bram_ctrl_0/S_AXI]
   connect_bd_intf_net -intf_net axi_interconnect_0_M01_AXI [get_bd_intf_pins axi_interconnect_0/M01_AXI] [get_bd_intf_pins axi_quad_spi_0/AXI_FULL]
-  connect_bd_intf_net -intf_net axi_interconnect_0_M02_AXI [get_bd_intf_pins axi_interconnect_0/M02_AXI] [get_bd_intf_pins axi_uartlite_0/S_AXI]
+  connect_bd_intf_net -intf_net axi_interconnect_0_M02_AXI [get_bd_intf_pins axi_uart16550_0/S_AXI] [get_bd_intf_pins axi_interconnect_0/M02_AXI]
   connect_bd_intf_net -intf_net axi_interconnect_0_M03_AXI [get_bd_intf_pins axi_interconnect_0/M03_AXI] [get_bd_intf_pins axi_gpio_0/S_AXI]
   connect_bd_intf_net -intf_net axi_quad_spi_0_SPI_0 [get_bd_intf_ports qspi_flash] [get_bd_intf_pins axi_quad_spi_0/SPI_0]
-  connect_bd_intf_net -intf_net axi_uartlite_0_UART [get_bd_intf_ports usb_uart] [get_bd_intf_pins axi_uartlite_0/UART]
+  connect_bd_intf_net -intf_net axi_uart16550_0_UART [get_bd_intf_ports usb_uart] [get_bd_intf_pins axi_uart16550_0/UART]
   connect_bd_intf_net -intf_net picorv32_core_0_mem_axi [get_bd_intf_pins picorv32_core_0/mem_axi] [get_bd_intf_pins axi_interconnect_0/S00_AXI]
 
   # Create port connections
   connect_bd_net -net Op1_0_1  [get_bd_ports resetn_0] \
-  [get_bd_pins clk_wiz_0/resetn] \
-  [get_bd_pins proc_sys_reset_0/ext_reset_in]
+  [get_bd_pins proc_sys_reset_0/ext_reset_in] \
+  [get_bd_pins clk_wiz_0/resetn]
   connect_bd_net -net clk_in1_0_1  [get_bd_ports clk_in1_0] \
   [get_bd_pins clk_wiz_0/clk_in1]
   connect_bd_net -net clk_wiz_0_clk_out1  [get_bd_pins clk_wiz_0/clk_out1] \
+  [get_bd_pins axi_bram_ctrl_0/s_axi_aclk] \
+  [get_bd_pins axi_gpio_0/s_axi_aclk] \
   [get_bd_pins proc_sys_reset_0/slowest_sync_clk] \
+  [get_bd_pins axi_interconnect_0/ACLK] \
+  [get_bd_pins axi_interconnect_0/S00_ACLK] \
   [get_bd_pins axi_interconnect_0/M00_ACLK] \
   [get_bd_pins axi_interconnect_0/M01_ACLK] \
   [get_bd_pins axi_interconnect_0/M02_ACLK] \
   [get_bd_pins axi_interconnect_0/M03_ACLK] \
-  [get_bd_pins axi_interconnect_0/ACLK] \
-  [get_bd_pins axi_interconnect_0/S00_ACLK] \
-  [get_bd_pins axi_bram_ctrl_0/s_axi_aclk] \
-  [get_bd_pins axi_uartlite_0/s_axi_aclk] \
-  [get_bd_pins axi_gpio_0/s_axi_aclk] \
   [get_bd_pins axi_quad_spi_0/ext_spi_clk] \
   [get_bd_pins axi_quad_spi_0/s_axi4_aclk] \
+  [get_bd_pins axi_uart16550_0/s_axi_aclk] \
   [get_bd_pins picorv32_core_0/clk]
   connect_bd_net -net clk_wiz_0_locked  [get_bd_pins clk_wiz_0/locked] \
   [get_bd_pins proc_sys_reset_0/dcm_locked]
   connect_bd_net -net picorv32_core_0_trap  [get_bd_pins picorv32_core_0/trap] \
   [get_bd_ports trap_0]
   connect_bd_net -net proc_sys_reset_0_peripheral_aresetn  [get_bd_pins proc_sys_reset_0/peripheral_aresetn] \
+  [get_bd_pins axi_bram_ctrl_0/s_axi_aresetn] \
+  [get_bd_pins axi_gpio_0/s_axi_aresetn] \
   [get_bd_pins axi_interconnect_0/ARESETN] \
   [get_bd_pins axi_interconnect_0/S00_ARESETN] \
-  [get_bd_pins axi_interconnect_0/M03_ARESETN] \
-  [get_bd_pins axi_interconnect_0/M01_ARESETN] \
   [get_bd_pins axi_interconnect_0/M00_ARESETN] \
+  [get_bd_pins axi_interconnect_0/M01_ARESETN] \
   [get_bd_pins axi_interconnect_0/M02_ARESETN] \
+  [get_bd_pins axi_interconnect_0/M03_ARESETN] \
   [get_bd_pins axi_quad_spi_0/s_axi4_aresetn] \
-  [get_bd_pins axi_gpio_0/s_axi_aresetn] \
-  [get_bd_pins axi_uartlite_0/s_axi_aresetn] \
-  [get_bd_pins axi_bram_ctrl_0/s_axi_aresetn] \
+  [get_bd_pins axi_uart16550_0/s_axi_aresetn] \
   [get_bd_pins picorv32_core_0/resetn]
 
   # Create address segments
-  assign_bd_address -offset 0x00004000 -range 0x00004000 -target_address_space [get_bd_addr_spaces picorv32_core_0/mem_axi] [get_bd_addr_segs axi_bram_ctrl_0/S_AXI/Mem0] -force
+  assign_bd_address -offset 0x00080000 -range 0x00080000 -target_address_space [get_bd_addr_spaces picorv32_core_0/mem_axi] [get_bd_addr_segs axi_bram_ctrl_0/S_AXI/Mem0] -force
   assign_bd_address -offset 0x05000000 -range 0x00000080 -target_address_space [get_bd_addr_spaces picorv32_core_0/mem_axi] [get_bd_addr_segs axi_gpio_0/S_AXI/Reg] -force
-  assign_bd_address -offset 0x20000000 -range 0x00020000 -target_address_space [get_bd_addr_spaces picorv32_core_0/mem_axi] [get_bd_addr_segs axi_quad_spi_0/aximm/MEM0] -force
-  assign_bd_address -offset 0x20020000 -range 0x00001000 -target_address_space [get_bd_addr_spaces picorv32_core_0/mem_axi] [get_bd_addr_segs axi_uartlite_0/S_AXI/Reg] -force
+  assign_bd_address -offset 0x20000000 -range 0x01000000 -target_address_space [get_bd_addr_spaces picorv32_core_0/mem_axi] [get_bd_addr_segs axi_quad_spi_0/aximm/MEM0] -force
+  assign_bd_address -offset 0x21000000 -range 0x00010000 -target_address_space [get_bd_addr_spaces picorv32_core_0/mem_axi] [get_bd_addr_segs axi_uart16550_0/S_AXI/Reg] -force
 
   # Perform GUI Layout
   regenerate_bd_layout -layout_string {
    "ActiveEmotionalView":"Default View",
-   "Default View_ScaleFactor":"0.82361",
-   "Default View_TopLeft":"-146,131",
+   "Color Coded_ScaleFactor":"0.517475",
+   "Color Coded_TopLeft":"-392,0",
+   "Default View_ScaleFactor":"0.677884",
+   "Default View_TopLeft":"190,93",
+   "Display-PortTypeClock":"true",
+   "Display-PortTypeOthers":"true",
+   "Display-PortTypeReset":"true",
    "ExpandedHierarchyInLayout":"",
-   "guistr":"# # String gsaved with Nlview 7.8.0 2024-04-26 e1825d835c VDI=44 GEI=38 GUI=JA:21.0 TLS
+   "Interfaces View_Layers":"/clk_in1_0_1:false|/clk_wiz_0_clk_out1:false|/proc_sys_reset_0_peripheral_aresetn:false|",
+   "Interfaces View_ScaleFactor":"0.771429",
+   "Interfaces View_TopLeft":"-239,3",
+   "No Loops_Layers":"/clk_in1_0_1:true|/clk_wiz_0_clk_out1:true|/proc_sys_reset_0_peripheral_aresetn:true|",
+   "No Loops_ScaleFactor":"0.537471",
+   "No Loops_TopLeft":"-372,4",
+   "guistr":"# # String gsaved with Nlview 7.8.0 2024-04-26 e1825d835c VDI=44 GEI=38 GUI=JA:21.0
 #  -string -flagsOSRD
 preplace port qspi_flash -pg 1 -lvl 6 -x 1600 -y 80 -defaultsOSRD
 preplace port led_4bits -pg 1 -lvl 6 -x 1600 -y 380 -defaultsOSRD
 preplace port usb_uart -pg 1 -lvl 6 -x 1600 -y 510 -defaultsOSRD
-preplace port port-id_clk_in1_0 -pg 1 -lvl 0 -x 0 -y 210 -defaultsOSRD
-preplace port port-id_trap_0 -pg 1 -lvl 6 -x 1600 -y 680 -defaultsOSRD
-preplace portBus resetn_0 -pg 1 -lvl 0 -x 0 -y 190 -defaultsOSRD
-preplace inst picorv32_core_0 -pg 1 -lvl 4 -x 1180 -y 740 -defaultsOSRD
-preplace inst axi_interconnect_0 -pg 1 -lvl 3 -x 860 -y 330 -defaultsOSRD
-preplace inst axi_uartlite_0 -pg 1 -lvl 4 -x 1180 -y 520 -defaultsOSRD
-preplace inst axi_quad_spi_0 -pg 1 -lvl 4 -x 1180 -y 90 -defaultsOSRD
-preplace inst axi_gpio_0 -pg 1 -lvl 4 -x 1180 -y 380 -defaultsOSRD
-preplace inst proc_sys_reset_0 -pg 1 -lvl 2 -x 510 -y 330 -defaultsOSRD
-preplace inst axi_bram_ctrl_0 -pg 1 -lvl 4 -x 1180 -y 240 -defaultsOSRD
-preplace inst blk_mem_gen_0 -pg 1 -lvl 5 -x 1450 -y 240 -defaultsOSRD
-preplace inst clk_wiz_0 -pg 1 -lvl 1 -x 170 -y 200 -defaultsOSRD
-preplace netloc Op1_0_1 1 0 2 70 130 280
-preplace netloc clk_in1_0_1 1 0 1 NJ 210
-preplace netloc clk_wiz_0_clk_out1 1 1 3 330 190 690 140 1030
-preplace netloc clk_wiz_0_locked 1 1 1 270 210n
-preplace netloc picorv32_core_0_trap 1 4 2 NJ 680 NJ
-preplace netloc proc_sys_reset_0_peripheral_aresetn 1 2 2 700 150 1040
+preplace port port-id_clk_in1_0 -pg 1 -lvl 0 -x -310 -y 210 -defaultsOSRD
+preplace port port-id_trap_0 -pg 1 -lvl 6 -x 1600 -y 620 -defaultsOSRD
+preplace portBus resetn_0 -pg 1 -lvl 0 -x -310 -y 180 -defaultsOSRD
+preplace inst picorv32_core_0 -pg 1 -lvl 4 -x 1190 -y 740 -swap {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 25 26 20 21 22 23 24 18 19 27 28 29 30 31 32} -defaultsOSRD
+preplace inst axi_interconnect_0 -pg 1 -lvl 3 -x 860 -y 320 -defaultsOSRD
+preplace inst axi_quad_spi_0 -pg 1 -lvl 4 -x 1190 -y 70 -defaultsOSRD
+preplace inst axi_gpio_0 -pg 1 -lvl 4 -x 1190 -y 380 -defaultsOSRD
+preplace inst proc_sys_reset_0 -pg 1 -lvl 2 -x 510 -y 230 -swap {1 0 3 4 2 5 6 7 8 9} -defaultsOSRD
+preplace inst axi_bram_ctrl_0 -pg 1 -lvl 4 -x 1190 -y 240 -defaultsOSRD
+preplace inst blk_mem_gen_0 -pg 1 -lvl 5 -x 1460 -y 240 -defaultsOSRD
+preplace inst clk_wiz_0 -pg 1 -lvl 1 -x 170 -y 170 -defaultsOSRD
+preplace inst axi_uart16550_0 -pg 1 -lvl 4 -x 1190 -y 530 -swap {0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 34 36 35 33} -defaultsOSRD
+preplace netloc Op1_0_1 1 0 2 60 100 280
+preplace netloc clk_in1_0_1 1 0 1 70J 180n
+preplace netloc clk_wiz_0_clk_out1 1 1 3 340 130 700 120 1030
+preplace netloc clk_wiz_0_locked 1 1 1 270 180n
+preplace netloc picorv32_core_0_trap 1 4 2 1340J 620 NJ
+preplace netloc proc_sys_reset_0_peripheral_aresetn 1 2 2 710 130 1040
 preplace netloc axi_bram_ctrl_0_BRAM_PORTA 1 4 1 NJ 240
 preplace netloc axi_gpio_0_GPIO 1 4 2 NJ 380 NJ
-preplace netloc axi_interconnect_0_M00_AXI 1 3 1 1020 220n
-preplace netloc axi_interconnect_0_M01_AXI 1 3 1 1010 60n
-preplace netloc axi_interconnect_0_M02_AXI 1 3 1 1010 340n
-preplace netloc axi_interconnect_0_M03_AXI 1 3 1 N 360
-preplace netloc axi_quad_spi_0_SPI_0 1 4 2 NJ 80 NJ
-preplace netloc axi_uartlite_0_UART 1 4 2 NJ 510 NJ
-preplace netloc picorv32_core_0_mem_axi 1 2 3 710 600 NJ 600 1320
-levelinfo -pg 1 0 170 510 860 1180 1450 1600
-pagesize -pg 1 -db -bbox -sgen -150 0 1720 880
+preplace netloc axi_interconnect_0_M00_AXI 1 3 1 1010 220n
+preplace netloc axi_interconnect_0_M01_AXI 1 3 1 1000 40n
+preplace netloc axi_interconnect_0_M02_AXI 1 3 1 1010 330n
+preplace netloc axi_interconnect_0_M03_AXI 1 3 1 1000 350n
+preplace netloc axi_quad_spi_0_SPI_0 1 4 2 NJ 50 1580J
+preplace netloc axi_uart16550_0_UART 1 4 2 NJ 520 1580
+preplace netloc picorv32_core_0_mem_axi 1 2 3 720 140 1050 160 1330
+levelinfo -pg 1 -310 170 510 860 1190 1460 1600
+pagesize -pg 1 -db -bbox -sgen -460 -20 1720 890
 "
 }
 
@@ -513,12 +539,8 @@ set_property REGISTERED_WITH_MANAGER "1" [get_files design_1.bd ]
 set_property SYNTH_CHECKPOINT_MODE "Hierarchical" [get_files design_1.bd ] 
 
 #call make_wrapper to create wrapper files
-if { [get_property IS_LOCKED [ get_files -norecurse [list design_1.bd]] ] == 1  } {
-  import_files -fileset sources_1 [file normalize "${origin_dir}/../SoC_PJT/project_1/project_1.gen/sources_1/bd/design_1/hdl/design_1_wrapper.v" ]
-} else {
-  set wrapper_path [make_wrapper -fileset sources_1 -files [ get_files -norecurse [list design_1.bd]] -top]
-  add_files -norecurse -fileset sources_1 $wrapper_path
-}
+set wrapper_path [make_wrapper -fileset sources_1 -files [ get_files -norecurse [list design_1.bd]] -top]
+add_files -norecurse -fileset sources_1 $wrapper_path
 
 
 set idrFlowPropertiesConstraints ""
@@ -529,7 +551,7 @@ catch {
 
 # Create 'synth_1' run (if not found)
 if {[string equal [get_runs -quiet synth_1] ""]} {
-    create_run -name synth_1 -part xc7a35tcsg324-1 -flow {Vivado Synthesis 2024} -strategy "Vivado Synthesis Defaults" -report_strategy {No Reports} -constrset constrs_1
+    create_run -name synth_1 -part xc7a100tcsg324-1 -flow {Vivado Synthesis 2024} -strategy "Vivado Synthesis Defaults" -report_strategy {No Reports} -constrset constrs_1
 } else {
   set_property strategy "Vivado Synthesis Defaults" [get_runs synth_1]
   set_property flow "Vivado Synthesis 2024" [get_runs synth_1]
@@ -547,7 +569,7 @@ if { $obj != "" } {
 
 }
 set obj [get_runs synth_1]
-set_property -name "part" -value "xc7a35tcsg324-1" -objects $obj
+set_property -name "part" -value "xc7a100tcsg324-1" -objects $obj
 set_property -name "auto_incremental_checkpoint" -value "1" -objects $obj
 set_property -name "strategy" -value "Vivado Synthesis Defaults" -objects $obj
 
@@ -556,7 +578,7 @@ current_run -synthesis [get_runs synth_1]
 
 # Create 'impl_1' run (if not found)
 if {[string equal [get_runs -quiet impl_1] ""]} {
-    create_run -name impl_1 -part xc7a35tcsg324-1 -flow {Vivado Implementation 2024} -strategy "Vivado Implementation Defaults" -report_strategy {No Reports} -constrset constrs_1 -parent_run synth_1
+    create_run -name impl_1 -part xc7a100tcsg324-1 -flow {Vivado Implementation 2024} -strategy "Vivado Implementation Defaults" -report_strategy {No Reports} -constrset constrs_1 -parent_run synth_1
 } else {
   set_property strategy "Vivado Implementation Defaults" [get_runs impl_1]
   set_property flow "Vivado Implementation 2024" [get_runs impl_1]
@@ -770,7 +792,7 @@ set_property -name "options.warn_on_violation" -value "1" -objects $obj
 
 }
 set obj [get_runs impl_1]
-set_property -name "part" -value "xc7a35tcsg324-1" -objects $obj
+set_property -name "part" -value "xc7a100tcsg324-1" -objects $obj
 set_property -name "strategy" -value "Vivado Implementation Defaults" -objects $obj
 set_property -name "steps.write_bitstream.args.readback_file" -value "0" -objects $obj
 set_property -name "steps.write_bitstream.args.verbose" -value "0" -objects $obj
