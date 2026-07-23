@@ -37,7 +37,7 @@ module uart_rx_tb(
     wire [4:0] tx_count;
     reg [7:0] tx_data = 8'hA5;
     reg tx_push = 1'b0;
-    specparam        tdevice_PU                = 3e8;//tPU
+    specparam        tdevice_PU                = 100000;//tPU
     
    design_1_wrapper dut(.usb_uart_rxd(uart_rx),
     .usb_uart_txd(uart_tx),

@@ -19,7 +19,7 @@ module cmd_interface_tb();
     // System Signals
     // =====================================================================
     wire fio0, fio1, fio2, fio3, CS, SCK, trap;
-    wire [31:0] gpio_io_o_0;
+    wire [3:0] gpio_io_o_0;
 
     // =====================================================================
     // UART Signals

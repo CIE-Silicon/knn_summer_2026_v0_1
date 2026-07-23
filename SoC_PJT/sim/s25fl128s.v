@@ -686,7 +686,7 @@ specify
         // Program Suspend/Program Resume Time
         specparam        tdevice_PRGSUSP           = 40e6;//
         // VCC (min) to CS# Low
-        specparam        tdevice_PU                = 3e8;//tPU
+        specparam        tdevice_PU                = 100000;//tPU
         // PPB Erase Time
         specparam        tdevice_PPBERASE          = 15e9;//
         // Password Unlock Time

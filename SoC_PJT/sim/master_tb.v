@@ -40,7 +40,7 @@ module master_tb;
     wire [7:0] recv_data;
     wire data_valid_rcv;
 
-    specparam tdevice_PU = 3e8; // tPU
+    specparam tdevice_PU = 100000; // tPU
 
     design_1_wrapper dut (
             .usb_uart_rxd(uart_rx),
