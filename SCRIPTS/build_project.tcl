@@ -25,7 +25,7 @@
 #
 #    "s25fl128s.v"
 #    "uart_receiver.v"
-#    "TB.v"
+#    "master_tb.v"
 #    "cmd_interface_tb.v"
 #    "uart_rx_tb.v"
 #
@@ -41,7 +41,7 @@ proc checkRequiredFiles { origin_dir} {
   set files [list \
  "[file normalize "$origin_dir/SoC_PJT/sim/s25fl128s.v"]"\
  "[file normalize "$origin_dir/SoC_PJT/sim/uart_receiver.v"]"\
- "[file normalize "$origin_dir/SoC_PJT/sim/TB.v"]"\
+ "[file normalize "$origin_dir/SoC_PJT/sim/master_tb.v"]"\
  "[file normalize "$origin_dir/SoC_PJT/sim/cmd_interface_tb.v"]"\
  "[file normalize "$origin_dir/SoC_PJT/sim/uart_rx_tb.v"]"\
  "[file normalize "$origin_dir/SoC_PJT/sim/uart_transmitter.v"]"\
@@ -239,7 +239,7 @@ set obj [get_filesets sim_1]
 set files [list \
  [file normalize "${origin_dir}/SoC_PJT/sim/s25fl128s.v"]\
  [file normalize "${origin_dir}/SoC_PJT/sim/uart_receiver.v"]\
- [file normalize "${origin_dir}/SoC_PJT/sim/TB.v"]\
+ [file normalize "${origin_dir}/SoC_PJT/sim/master_tb.v"]\
  [file normalize "${origin_dir}/SoC_PJT/sim/cmd_interface_tb.v"]\
  [file normalize "${origin_dir}/SoC_PJT/sim/uart_rx_tb.v"]\
  [file normalize "${origin_dir}/SoC_PJT/sim/uart_transmitter.v"]\
@@ -258,7 +258,7 @@ foreach f $files {
 # Set 'sim_1' fileset properties
 set obj [get_filesets sim_1]
 set_property -name "sim_wrapper_top" -value "1" -objects $obj
-set_property -name "top" -value "TB" -objects $obj
+set_property -name "top" -value "cmd_interface_tb" -objects $obj
 set_property -name "top_lib" -value "xil_defaultlib" -objects $obj
 
 # Set 'utils_1' fileset object

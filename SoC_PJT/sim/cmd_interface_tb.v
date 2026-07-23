@@ -6,7 +6,7 @@
 //   - RTS/CTS flow-control monitoring and stall tests from TB #2
 //////////////////////////////////////////////////////////////////////////////////
 
-module TB();
+module cmd_interface_tb();
 
     // =====================================================================
     // Clock and Reset
