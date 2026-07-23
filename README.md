@@ -10,12 +10,13 @@ A portable RISC-V SoC integration project based on the **PicoRV32** processor, d
 * **`IP_REPO/`**
     * **`pico_core_ip/`**: Portable PicoRV32 wrapper IP.
         * **`src/`**: Contains PicoRV32 RTL, BootROM `.coe` files, and BRAM IP.
-        * **`src/bootrom_pico.coe`**: This is the coe file for the bootROM that is referenced by the BRAM inside the pico_core wrapper IP. This has to replaced to run any new bootROM.
+        * **`src/bootrom_pico.coe`**: This is the coe file for the bootROM that is referenced by the BRAM inside the pico_core wrapper IP. **IMPORTANT**: This has to replaced to run any new bootROM.
 * **`SCRIPTS/`**
     * **`build_project.tcl`**: Script for the end-to-end establishment of the SoC block diagram.
 * **`SoC_PJT/`**: Sample project along with simulation and flash model files.
-    * **`flashmodels/`**: Contains memory files required for flash emulation.
+    * **`flashmodelfiles/`**: Contains memory files required for flash emulation.
     * **`sim/`**: Testbench files and simulation dependencies.
+    * **`constraints/`**: Constraint files
 * **`master_tcl.tcl`**: Entry-point script. Sets up directory variables and launches the build by invoking `build_project.tcl`.
 
 ---
