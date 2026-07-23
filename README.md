@@ -1,7 +1,7 @@
 # VIVADO_BLOCK_DESIGN_V01
 
 A portable RISC-V SoC integration project based on the **PicoRV32** processor, designed for rapid deployment using a scripted Tcl flow.
-<img width="940" height="464" alt="image" src="https://github.com/user-attachments/assets/c2038efc-51c7-4777-9f78-ac007e2f9c3c" />
+<img width="940" height="464" alt="image" src="/assets/block_design.png" />
 
 ---
 
